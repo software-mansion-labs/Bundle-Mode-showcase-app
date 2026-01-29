@@ -1,4 +1,11 @@
-This is an app that showcases the use of `react-native-worklets` Bundle Mode feature. To read more about this feature, [check the documentation](https://docs.swmansion.com/react-native-worklets/experimental/bundleMode). It uses `react-native-wgpu` as an example library that can be run on the Worklet Runtime in a plug-and-play fashion.
+# Bundle Mode Showcase App
+
+This is an app that showcases the use of `react-native-worklets` Bundle Mode feature. To read more about this feature, [check the documentation](https://docs.swmansion.com/react-native-worklets/bundleMode).
+
+It showcases two examples:
+
+- A GPU animation running on a background thread, fetching geometry from the network, using `react-native-wgpu`, `three.js`, and `axios`.
+- A GraphQL client running on a background thread, fetching data from a public GraphQL API, using `@apollo/client` and `graphql`.
 
 # Getting Started
 
