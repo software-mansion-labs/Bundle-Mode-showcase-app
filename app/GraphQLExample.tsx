@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   FlatList,
   Pressable,
+  Button,
 } from 'react-native';
 import {
   createWorkletRuntime,
@@ -40,7 +41,7 @@ export default function GraphQLExample() {
     <View style={styles.container}>
       <Text style={styles.title}>GraphQL Fetch Example</Text>
       <Text style={styles.subheader}>
-        Data is fetched on a background thread!
+        Data is fetched on a background thread and filtered there!
       </Text>
       <List />
     </View>
@@ -48,44 +49,54 @@ export default function GraphQLExample() {
 }
 
 function List() {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [data, setData] = useState<any>(null);
 
-  useEffect(() => {
-    scheduleOnRuntime(apolloRuntime, () => {
-      'worklet';
-      const client = new ApolloClient({
-        link: new HttpLink({ uri: 'https://api.graphql.guide/graphql' }),
-        cache: new InMemoryCache(),
-      });
+  return (
+    <>
+      <Button
+        title="Load data"
+        onPress={() => {
+          setLoading(true);
+          loadData(setData, setLoading);
+        }}
+      />
+      {loading && <Loading />}
+      <FlatList
+        data={data || []}
+        renderItem={({ item }) => <ChapterItem chapter={item} />}
+        keyExtractor={chapter => chapter.id.toString()}
+      />
+    </>
+  );
+}
 
-      const CHAPTERS_QUERY = gql`
-        query Chapters {
-          chapters {
-            id
-            number
-            title
-          }
+function loadData(setData: any, setLoading: any) {
+  scheduleOnRuntime(apolloRuntime, () => {
+    'worklet';
+    const client = new ApolloClient({
+      link: new HttpLink({ uri: 'https://api.graphql.guide/graphql' }),
+      cache: new InMemoryCache(),
+    });
+
+    const CHAPTERS_QUERY = gql`
+      query Chapters {
+        chapters {
+          id
+          number
+          title
         }
-      `;
-      client.query({ query: CHAPTERS_QUERY }).then(result => {
-        scheduleOnRN(setData, result.data);
-        scheduleOnRN(setLoading, false);
-      });
+      }
+    `;
+    client.query({ query: CHAPTERS_QUERY }).then((result: any) => {
+      const data = result.data.chapters.slice(
+        0,
+        Math.round(result.data.chapters.length * Math.random()),
+      );
+      scheduleOnRN(setData, data);
+      scheduleOnRN(setLoading, false);
     });
   });
-
-  if (loading) {
-    return <Loading />;
-  }
-
-  return (
-    <FlatList
-      data={data.chapters}
-      renderItem={({ item }) => <ChapterItem chapter={item} />}
-      keyExtractor={chapter => chapter.id.toString()}
-    />
-  );
 }
 
 function Loading() {
@@ -125,6 +136,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    marginVertical: 30,
   },
   item: {
     paddingTop: 16,
