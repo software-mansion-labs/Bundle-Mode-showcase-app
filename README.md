@@ -2,14 +2,20 @@
 
 This is an app that showcases the use of `react-native-worklets` Bundle Mode feature. To read more about this feature, [check the documentation](https://docs.swmansion.com/react-native-worklets/bundleMode).
 
+## Overview
+
 It showcases two examples:
 
 - A GPU animation running on a background thread, fetching geometry from the network, using `react-native-wgpu`, `three.js`, and `axios`.
 - A GraphQL client running on a background thread, fetching data from a public GraphQL API, using `@apollo/client` and `graphql`.
 
-# Getting Started
+Aforementioned libraries can be run on background threads, on Worklet runtimes, because they are allowlisted in the [Babel config](babel.config.js) of this project.
 
-## Installing dependencies
+You can find detailed instructions on how to enable the Bundle Mode in your project [here](https://docs.swmansion.com/react-native-worklets/bundleMode/setup).
+
+## Running the app
+
+### Installing dependencies
 
 Install all the necessary dependencies with `yarn`.
 
@@ -23,7 +29,7 @@ If you have trouble with that step, it probably means that you need to enable `c
 corepack enable && yarn
 ```
 
-## Step 1: Start Metro
+### Step 1: Start Metro
 
 First, you will need to run **Metro**, the JavaScript build tool for React Native.
 
@@ -33,17 +39,17 @@ To start the Metro dev server, run the following command from the root of your R
 yarn start
 ```
 
-## Step 2: Build and run your app
+### Step 2: Build and run your app
 
 With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
 
-### Android
+#### Android
 
 ```sh
 yarn android
 ```
 
-### iOS
+#### iOS
 
 For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
 

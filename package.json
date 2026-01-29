@@ -1,13 +1,4 @@
 {
-  "name": "BundleModeApp",
-  "version": "0.0.1",
-  "private": true,
-  "scripts": {
-    "android": "react-native run-android",
-    "ios": "react-native run-ios",
-    "lint": "eslint .",
-    "start": "react-native start"
-  },
   "dependencies": {
     "@apollo/client": "4.1.2",
     "@react-navigation/native": "7.1.28",
@@ -16,8 +7,6 @@
     "graphql": "16.12.0",
     "react": "19.2.0",
     "react-native": "0.83.1",
-    "react-native-gesture-handler": "2.30.0",
-    "react-native-reanimated": "4.2.1",
     "react-native-safe-area-context": "5.6.2",
     "react-native-screens": "4.20.0",
     "react-native-wgpu": "0.5.2",
@@ -49,15 +38,24 @@
   "engines": {
     "node": ">=18"
   },
+  "name": "BundleModeApp",
   "packageManager": "yarn@4.12.0",
+  "private": true,
+  "resolutions": {
+    "metro": "patch:metro@npm%3A0.83.2#~/.yarn/patches/metro-npm-0.83.2-d09f48ca84.patch",
+    "metro-runtime": "patch:metro-runtime@npm%3A0.83.2#~/.yarn/patches/metro-runtime-npm-0.83.2-c614bbd3b9.patch"
+  },
+  "scripts": {
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "lint": "eslint .",
+    "start": "react-native start"
+  },
+  "version": "0.0.0",
   "worklets": {
     "staticFeatureFlags": {
       "BUNDLE_MODE_ENABLED": true,
       "FETCH_PREVIEW_ENABLED": true
     }
-  },
-  "resolutions": {
-    "metro": "patch:metro@npm%3A0.83.2#~/.yarn/patches/metro-npm-0.83.2-d09f48ca84.patch",
-    "metro-runtime": "patch:metro-runtime@npm%3A0.83.2#~/.yarn/patches/metro-runtime-npm-0.83.2-c614bbd3b9.patch"
   }
 }
