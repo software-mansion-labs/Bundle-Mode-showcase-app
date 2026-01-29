@@ -1,8 +1,12 @@
 import { useEffect, useState } from 'react';
-import { runOnUI } from 'react-native-worklets';
+import {
+  runOnUI,
+  scheduleOnRuntime,
+  type WorkletRuntime,
+} from 'react-native-worklets';
 import { WebGPURenderer } from 'three/webgpu';
 
-export function initWebGPU() {
+export function initWebGPU(runtime: WorkletRuntime) {
   const navigator = globalThis.navigator as NavigatorGPU;
   const GPUBufferUsage = globalThis.GPUBufferUsage;
   const GPUColorWrite = globalThis.GPUColorWrite;
@@ -10,7 +14,9 @@ export function initWebGPU() {
   const GPUShaderStage = globalThis.GPUShaderStage;
   const GPUTextureUsage = globalThis.GPUTextureUsage;
 
-  runOnUI(() => {
+  scheduleOnRuntime(runtime, () => {
+    'worklet';
+
     if (globalThis.self) {
       return;
     }
@@ -23,7 +29,7 @@ export function initWebGPU() {
     globalThis.GPUTextureUsage = GPUTextureUsage;
     globalThis.setImmediate =
       globalThis.requestAnimationFrame as typeof setImmediate;
-  })();
+  });
 }
 
 export function makeWebGPURenderer(
@@ -111,7 +117,7 @@ export function useBusyJS() {
 declare global {
   var self: typeof globalThis;
   var navigator: NavigatorGPU;
-  var CubeRenderer: WebGPURenderer | null;
+  var renderer: WebGPURenderer | null;
   var lastFrame: number;
   var _WORKLET: boolean | undefined;
 }
