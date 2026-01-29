@@ -1,6 +1,6 @@
 # Bundle Mode Showcase App
 
-This is an app that showcases the use of `react-native-worklets` Bundle Mode feature. To read more about this feature [check the documentation](https://docs.swmansion.com/react-native-worklets/bundleMode).
+This is an app that showcases the use of `react-native-worklets` Bundle Mode feature. To read more about this feature [check the documentation](https://docs.swmansion.com/react-native-worklets/docs/bundleMode).
 
 ## Overview
 
@@ -11,7 +11,7 @@ It showcases two examples:
 
 Aforementioned libraries can be run on background threads, on Worklet runtimes, because they are allowlisted in the [Babel config](babel.config.js) of this project.
 
-You can find detailed instructions on how to enable the Bundle Mode in your project [here](https://docs.swmansion.com/react-native-worklets/bundleMode/setup).
+You can find detailed instructions on how to enable the Bundle Mode in your project [here](https://docs.swmansion.com/react-native-worklets/bundleMode/docs/setup).
 
 ## Running the app
 
