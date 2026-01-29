@@ -2,7 +2,7 @@
 const workletsPluginOptions = {
   bundleMode: true,
   strictGlobal: true,
-  workletizableModules: ['axios', 'three', 'three/tsl'],
+  workletizableModules: ['axios', 'three', 'three/tsl', '@apollo/client'],
 };
 
 /** @type {import('@babel/core').TransformOptions} */
