@@ -3514,7 +3514,7 @@ __metadata:
     react-native-safe-area-context: "npm:5.6.2"
     react-native-screens: "npm:4.20.0"
     react-native-wgpu: "npm:0.5.2"
-    react-native-worklets: "file:./react-native-worklets-0.8.0-main-20260129125524.tgz"
+    react-native-worklets: "npm:0.8.0-bundle-mode-preview-1"
     react-test-renderer: "npm:19.2.0"
     rxjs: "npm:7.8.2"
     three: "npm:0.182.0"
@@ -7806,7 +7806,7 @@ __metadata:
 
 "metro@patch:metro@npm%3A0.83.2#~/.yarn/patches/metro-npm-0.83.2-d09f48ca84.patch":
   version: 0.83.2
-  resolution: "metro@patch:metro@npm%3A0.83.2#~/.yarn/patches/metro-npm-0.83.2-d09f48ca84.patch::version=0.83.2&hash=e4a26f"
+  resolution: "metro@patch:metro@npm%3A0.83.2#~/.yarn/patches/metro-npm-0.83.2-d09f48ca84.patch::version=0.83.2&hash=b17b04"
   dependencies:
     "@babel/code-frame": "npm:^7.24.7"
     "@babel/core": "npm:^7.25.2"
@@ -7850,7 +7850,7 @@ __metadata:
     yargs: "npm:^17.6.2"
   bin:
     metro: src/cli.js
-  checksum: 10c0/8a99794fa862cf827e45404ca94fde8175998f8e770373e1002a9c4597ee489ed016ec0c45591260adf1c8598685fd5c11e3c9bca0551e308ca95da29e6dad47
+  checksum: 10c0/6767442be0e55eaf059915c984fbbebd5bd8d9e96f7a7f2a2460894e0881de04e1e78aed1eba212dc5443da5a82068dd9cff25757195675bdff14a38d00ffd11
   languageName: node
   linkType: hard
 
@@ -8774,9 +8774,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-worklets@file:./react-native-worklets-0.8.0-main-20260129125524.tgz::locator=BundleModeApp%40workspace%3A.":
-  version: 0.8.0-main-20260129125524
-  resolution: "react-native-worklets@file:./react-native-worklets-0.8.0-main-20260129125524.tgz#./react-native-worklets-0.8.0-main-20260129125524.tgz::hash=174672&locator=BundleModeApp%40workspace%3A."
+"react-native-worklets@npm:0.8.0-bundle-mode-preview-1":
+  version: 0.8.0-bundle-mode-preview-1
+  resolution: "react-native-worklets@npm:0.8.0-bundle-mode-preview-1"
   dependencies:
     "@babel/plugin-transform-arrow-functions": "npm:7.27.1"
     "@babel/plugin-transform-class-properties": "npm:7.27.1"
@@ -8794,7 +8794,7 @@ __metadata:
     "@babel/core": "*"
     react: "*"
     react-native: "*"
-  checksum: 10c0/decc30d00073aebd68c2c6dd1ea8a940bf1025820f2716aacb00e4e8a6d4c83f9575be7c0e06718fd11d58653bf102b05d779fdf06861db9a9ff969c50707c83
+  checksum: 10c0/c41d20b08fab38652b1d400d5b080dee3f4df123db227913200e0c427f8276749b69bb5d24941e71e4b0a7454a6b56064e0d454d44c1652b0392b99b31bef64a
   languageName: node
   linkType: hard
 
