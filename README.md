@@ -1,6 +1,6 @@
 # Bundle Mode Showcase App
 
-This is an app that showcases the use of `react-native-worklets` Bundle Mode feature. To read more about this feature, [check the documentation](https://docs.swmansion.com/react-native-worklets/bundleMode).
+This is an app that showcases the use of `react-native-worklets` Bundle Mode feature. To read more about this feature [check the documentation](https://docs.swmansion.com/react-native-worklets/bundleMode).
 
 ## Overview
 
