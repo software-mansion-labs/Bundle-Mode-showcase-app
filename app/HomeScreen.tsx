@@ -28,6 +28,22 @@ export default function HomeScreen({ navigation }: Props) {
       >
         <Text style={styles.buttonText}>GraphQL Example</Text>
       </TouchableOpacity>
+
+      <TouchableOpacity
+        style={[styles.button, styles.markdownButton]}
+        onPress={() => navigation.navigate('StreamingMarkdown')}
+      >
+        <Text style={styles.buttonText}>Streaming Markdown</Text>
+        <Text style={styles.buttonSubtext}>remend on background worklet</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={[styles.button, styles.llmButton]}
+        onPress={() => navigation.navigate('LLMStreaming')}
+      >
+        <Text style={styles.buttonText}>LLM Streaming</Text>
+        <Text style={styles.buttonSubtext}>live OpenAI response</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -60,10 +76,22 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     minWidth: 250,
   },
+  markdownButton: {
+    backgroundColor: '#34C759',
+  },
+  llmButton: {
+    backgroundColor: '#FF9500',
+  },
   buttonText: {
     color: 'white',
     fontSize: 16,
     fontWeight: '600',
     textAlign: 'center',
+  },
+  buttonSubtext: {
+    color: 'rgba(255,255,255,0.8)',
+    fontSize: 12,
+    textAlign: 'center',
+    marginTop: 2,
   },
 });
