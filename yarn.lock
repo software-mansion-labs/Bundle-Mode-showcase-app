@@ -3511,11 +3511,14 @@ __metadata:
     prettier: "npm:2.8.8"
     react: "npm:19.2.0"
     react-native: "npm:0.83.1"
+    react-native-enriched-markdown: "npm:0.4.0"
     react-native-safe-area-context: "npm:5.6.2"
     react-native-screens: "npm:4.20.0"
+    react-native-sse: "npm:1.2.1"
     react-native-wgpu: "npm:0.5.2"
     react-native-worklets: "npm:0.8.0-bundle-mode-preview-2"
     react-test-renderer: "npm:19.2.0"
+    remend: "npm:1.2.2"
     rxjs: "npm:7.8.2"
     three: "npm:0.182.0"
     typescript: "npm:5.8.3"
@@ -8734,6 +8737,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-enriched-markdown@npm:0.4.0":
+  version: 0.4.0
+  resolution: "react-native-enriched-markdown@npm:0.4.0"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 10c0/4e4fb31146bbcac32e693d3a7408af1f61456c5b6dd4fed6df841f4b8148ca223610f4e7221f8f2c73f7d3a91af7398f3e8ad37c157862f680d52d7c22d614c2
+  languageName: node
+  linkType: hard
+
 "react-native-safe-area-context@npm:5.6.2":
   version: 5.6.2
   resolution: "react-native-safe-area-context@npm:5.6.2"
@@ -8754,6 +8767,13 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 10c0/f5d18bef4bee5b65470f76048dd3511d4ef18d1cf3566b6479a70a67e75c92aca3549342ee96c418e68997380dc562fbf4e63b5d411975c2265f106fecb242cd
+  languageName: node
+  linkType: hard
+
+"react-native-sse@npm:1.2.1":
+  version: 1.2.1
+  resolution: "react-native-sse@npm:1.2.1"
+  checksum: 10c0/68b95601da2a0d37b2cd7ee4af16169a4650ec615b656cb064aba537f3f516b2242b0533c90b63fc0950ef39e25f5a62d8bc53c70ac892c460d24dc3efe3d844
   languageName: node
   linkType: hard
 
@@ -9017,6 +9037,13 @@ __metadata:
   bin:
     regjsparser: bin/parser
   checksum: 10c0/4702f85cda09f67747c1b2fb673a0f0e5d1ba39d55f177632265a0be471ba59e3f320623f411649141f752b126b8126eac3ff4c62d317921e430b0472bfc6071
+  languageName: node
+  linkType: hard
+
+"remend@npm:1.2.2":
+  version: 1.2.2
+  resolution: "remend@npm:1.2.2"
+  checksum: 10c0/e5ff2a4d908114942507765b787e497853a3f58a81adb07f49502bb5e1b9ce492b977fe8cc5b00eb633cd9858b507ee0d0331bd3d667a30e3228ff2ef08332ca
   languageName: node
   linkType: hard
 

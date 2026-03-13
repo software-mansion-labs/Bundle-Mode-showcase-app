@@ -4,6 +4,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeScreen from './app/HomeScreen';
 import GPUExample from './app/GPUExample';
 import GraphQLExample from './app/GraphQLExample';
+import StreamingMarkdownSimulator from './app/StreamingMarkdownSimulator';
+import LLMStreamingDemo from './app/LLMStreamingDemo';
 
 const Stack = createNativeStackNavigator();
 
@@ -36,6 +38,16 @@ export default function App() {
           name="GraphQL"
           component={GraphQLExample}
           options={{ title: 'GraphQL Example' }}
+        />
+        <Stack.Screen
+          name="StreamingMarkdown"
+          component={StreamingMarkdownSimulator}
+          options={{ title: 'Streaming Markdown' }}
+        />
+        <Stack.Screen
+          name="LLMStreaming"
+          component={LLMStreamingDemo}
+          options={{ title: 'LLM Streaming' }}
         />
       </Stack.Navigator>
     </NavigationContainer>
