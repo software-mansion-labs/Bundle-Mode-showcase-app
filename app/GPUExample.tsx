@@ -1,56 +1,151 @@
-import { Canvas, useCanvasRef, type CanvasRef } from 'react-native-wgpu';
 import {
-  BufferGeometryLoader,
-  PerspectiveCamera,
-  Scene,
+  Canvas,
+  useCanvasRef,
+  type CanvasRef,
+} from 'react-native-wgpu';
+import {
+  ACESFilmicToneMapping,
+  BufferAttribute,
+  BufferGeometry,
+  Clock,
   Color,
-  MeshBasicMaterial,
-  InstancedMesh,
-  DynamicDrawUsage,
+  DataTexture,
+  EquirectangularReflectionMapping,
+  HalfFloatType,
+  Mesh,
+  MeshStandardMaterial,
+  PerspectiveCamera,
+  RGBAFormat,
+  Scene,
+  Vector3,
+  type Material,
 } from 'three';
-import { StyleSheet, View, Button, Text } from 'react-native';
-import { initWebGPU, makeWebGPURenderer, useBusyJS } from '../utils';
-import { createWorkletRuntime, scheduleOnRuntime } from 'react-native-worklets';
-import { mix, range, normalWorld, oscSine, time } from 'three/tsl';
+import { StyleSheet, View, Pressable, Text } from 'react-native';
+import { makeWebGPURenderer, useBusyJS } from '../utils';
+import { scheduleOnUI } from 'react-native-worklets';
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import { useGLTF, useRGBE, type GLTF } from './AssetManager';
 
-const GPURuntime = createWorkletRuntime('gpu');
+type SerializedMesh = {
+  positions: Float32Array;
+  normals: Float32Array | null;
+  uvs: Float32Array | null;
+  indices: Uint16Array | Uint32Array | null;
+  matrix: Float32Array;
+  color: [number, number, number];
+  metalness: number;
+  roughness: number;
+};
+
+type SerializedEnv = {
+  data: Uint16Array;
+  width: number;
+  height: number;
+};
 
 export default function GPUExample() {
   const ref = useCanvasRef();
   const toggleBusyJS = useBusyJS();
+  const gltf = useGLTF(require('./assets/helmet/DamagedHelmet.gltf'));
+  const env = useRGBE(require('./assets/helmet/royal_esplanade_1k.hdr'));
 
   useEffect(() => {
-    renderOnWorkletRuntime(ref);
-    return cleanupOnWorkletRuntime();
-  }, []);
+    if (!gltf || !env) {
+      return;
+    }
+    const meshes = serializeScene(gltf);
+    const envData = serializeEnv(env);
+    renderOnUI(ref, meshes, envData);
+    return cleanupOnUI();
+  }, [gltf, env, ref]);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>This box is animated on the JS thread</Text>
-      <StateAnimatedBox />
-      <Button title="Toggle busy JS Thread" onPress={toggleBusyJS} />
-      <Text style={styles.text}>
-        This GPU animation is running on a background thread.
-      </Text>
-      <Text style={styles.text}>
-        It fetches the geometry from the network with axios!
-      </Text>
+      <View style={styles.header}>
+        <StateAnimatedBox />
+        <Pressable style={styles.button} onPress={toggleBusyJS}>
+          <Text style={styles.buttonText}>Toggle busy JS</Text>
+        </Pressable>
+      </View>
       <Canvas ref={ref} style={styles.gpu} />
     </View>
   );
 }
 
-async function renderOnWorkletRuntime(ref: React.RefObject<CanvasRef>) {
+function serializeScene(gltf: GLTF): SerializedMesh[] {
+  gltf.scene.updateMatrixWorld(true);
+  const meshes: SerializedMesh[] = [];
+  gltf.scene.traverse(obj => {
+    const mesh = obj as Mesh;
+    if (!(mesh as any).isMesh) {
+      return;
+    }
+    const geo = mesh.geometry as BufferGeometry;
+    const mat = mesh.material as Material & {
+      color?: Color;
+      metalness?: number;
+      roughness?: number;
+    };
+    const position = geo.attributes.position as BufferAttribute;
+    const normal = geo.attributes.normal as BufferAttribute | undefined;
+    const uv = geo.attributes.uv as BufferAttribute | undefined;
+    const index = geo.index;
+    const color = mat.color ?? new Color(0xcccccc);
+    meshes.push({
+      positions: new Float32Array(position.array),
+      normals: normal ? new Float32Array(normal.array) : null,
+      uvs: uv ? new Float32Array(uv.array) : null,
+      indices: index
+        ? index.array.BYTES_PER_ELEMENT === 4
+          ? new Uint32Array(index.array as Uint32Array)
+          : new Uint16Array(index.array as Uint16Array)
+        : null,
+      matrix: new Float32Array(mesh.matrixWorld.elements),
+      color: [color.r, color.g, color.b],
+      metalness: mat.metalness ?? 0.8,
+      roughness: mat.roughness ?? 0.4,
+    });
+  });
+  return meshes;
+}
+
+function serializeEnv(texture: { image: any }): SerializedEnv {
+  const image = texture.image;
+  return {
+    data: new Uint16Array(image.data.buffer ?? image.data),
+    width: image.width,
+    height: image.height,
+  };
+}
+
+function renderOnUI(
+  ref: React.RefObject<CanvasRef>,
+  meshes: SerializedMesh[],
+  env: SerializedEnv,
+) {
   const context = ref.current!.getContext('webgpu')!;
-  const adapter = await navigator.gpu.requestAdapter();
-  const device = await adapter?.requestDevice();
 
-  initWebGPU(GPURuntime);
+  const navigator = globalThis.navigator as NavigatorGPU;
+  const GPUBufferUsage = globalThis.GPUBufferUsage;
+  const GPUColorWrite = globalThis.GPUColorWrite;
+  const GPUMapMode = globalThis.GPUMapMode;
+  const GPUShaderStage = globalThis.GPUShaderStage;
+  const GPUTextureUsage = globalThis.GPUTextureUsage;
 
-  scheduleOnRuntime(GPURuntime, async () => {
+  scheduleOnUI(async () => {
     'worklet';
+
+    if (!globalThis.self) {
+      globalThis.self = globalThis;
+      globalThis.navigator = { gpu: navigator.gpu } as NavigatorGPU;
+      globalThis.GPUBufferUsage = GPUBufferUsage;
+      globalThis.GPUColorWrite = GPUColorWrite;
+      globalThis.GPUMapMode = GPUMapMode;
+      globalThis.GPUShaderStage = GPUShaderStage;
+      globalThis.GPUTextureUsage = GPUTextureUsage;
+      globalThis.setImmediate =
+        globalThis.requestAnimationFrame as typeof setImmediate;
+    }
 
     if (globalThis.renderer) {
       return;
@@ -61,79 +156,88 @@ async function renderOnWorkletRuntime(ref: React.RefObject<CanvasRef>) {
       height: number;
     };
 
-    const amount = 2;
-    const count = Math.pow(amount, 3);
-
-    const camera = new PerspectiveCamera(60, width / height);
-    camera.position.set(0, 0, 200);
-    camera.lookAt(0, 0, 0);
+    const camera = new PerspectiveCamera(45, width / height, 0.25, 20);
+    camera.position.set(-1.8, 0.6, 2.7);
 
     const scene = new Scene();
 
-    const headURL =
-      'https://threejs.org/examples/models/json/WaltHeadLo_buffergeometry.json';
-    const codeURL =
-      'https://threejs.org/examples/models/json/QRCode_buffergeometry.json';
+    const envTexture = new DataTexture(
+      env.data,
+      env.width,
+      env.height,
+      RGBAFormat,
+      HalfFloatType,
+    );
+    envTexture.mapping = EquirectangularReflectionMapping;
+    envTexture.needsUpdate = true;
 
-    const urls = [headURL, codeURL];
-    const chosenUrl = urls[Math.floor(Math.random() * urls.length)]!;
+    scene.background = envTexture;
+    scene.environment = envTexture;
 
-    const geometryJSON = await axios
-      .get(chosenUrl)
-      .then(res => res.data)
-      .catch(e => console.error(e));
+    for (const m of meshes) {
+      const geometry = new BufferGeometry();
+      geometry.setAttribute(
+        'position',
+        new BufferAttribute(m.positions, 3),
+      );
+      if (m.normals) {
+        geometry.setAttribute(
+          'normal',
+          new BufferAttribute(m.normals, 3),
+        );
+      }
+      if (m.uvs) {
+        geometry.setAttribute('uv', new BufferAttribute(m.uvs, 2));
+      }
+      if (m.indices) {
+        geometry.setIndex(new BufferAttribute(m.indices, 1));
+      }
+      if (!m.normals) {
+        geometry.computeVertexNormals();
+      }
+      const material = new MeshStandardMaterial({
+        color: new Color(m.color[0], m.color[1], m.color[2]),
+        metalness: m.metalness,
+        roughness: m.roughness,
+      });
+      const mesh = new Mesh(geometry, material);
+      mesh.matrixAutoUpdate = false;
+      mesh.matrix.fromArray(Array.from(m.matrix));
+      scene.add(mesh);
+    }
 
-    const geometry = new BufferGeometryLoader().parse(geometryJSON);
-
-    const randomColors = range(new Color(0x666666), new Color(0xcccccc));
-
-    const material = new MeshBasicMaterial();
-
-    material.colorNode = mix(normalWorld, randomColors, oscSine(time.mul(0.1)));
-
-    geometry!.computeVertexNormals();
-
-    const mesh = new InstancedMesh(geometry!, material, count);
-    mesh.instanceMatrix.setUsage(DynamicDrawUsage);
-
-    scene.add(mesh);
-
-    const renderer = makeWebGPURenderer(context, device);
+    const renderer = makeWebGPURenderer(context);
+    renderer.toneMapping = ACESFilmicToneMapping;
     await renderer.init();
 
-    let lastTimestamp = 0;
+    const clock = new Clock();
 
-    function animate(timestamp: number) {
-      if (lastTimestamp === 0) {
-        lastTimestamp = timestamp;
-        return;
-      }
-
-      const delta = timestamp - lastTimestamp;
-      lastTimestamp = timestamp;
-
-      const rotationPerMs = (Math.PI * 2) / 8 / 1000;
-
-      mesh.rotation.x += rotationPerMs * delta;
-      mesh.rotation.y += (rotationPerMs * delta) / 2;
-      mesh.rotation.z += (rotationPerMs * delta) / 4;
+    function animate() {
+      const elapsed = clock.getElapsedTime();
+      const distance = 3;
+      camera.position.x = Math.sin(elapsed) * distance;
+      camera.position.z = Math.cos(elapsed) * distance;
+      camera.lookAt(new Vector3(0, 0, 0));
 
       renderer.render(scene, camera);
       context!.present();
     }
 
+    globalThis.renderer = renderer;
     await renderer.setAnimationLoop(animate);
   });
 }
 
-function cleanupOnWorkletRuntime() {
-  scheduleOnRuntime(GPURuntime, async () => {
-    'worklet';
-    if (globalThis.renderer) {
-      await globalThis.renderer.setAnimationLoop(null);
-      globalThis.renderer = null;
-    }
-  });
+function cleanupOnUI() {
+  return () => {
+    scheduleOnUI(async () => {
+      'worklet';
+      if (globalThis.renderer) {
+        await globalThis.renderer.setAnimationLoop(null);
+        globalThis.renderer = null;
+      }
+    });
+  };
 }
 
 function StateAnimatedBox() {
@@ -169,22 +273,32 @@ function StateAnimatedBox() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
-  text: {
-    paddingHorizontal: 20,
-    textAlign: 'center',
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: '#ccc',
+  },
+  button: {
+    backgroundColor: '#007AFF',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 6,
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: '600',
   },
   gpu: {
-    marginTop: 50,
-    width: '100%',
-    height: '50%',
+    flex: 1,
   },
   box: {
-    width: 50,
-    height: 50,
-    margin: 25,
+    width: 28,
+    height: 28,
     backgroundColor: 'blue',
   },
 });

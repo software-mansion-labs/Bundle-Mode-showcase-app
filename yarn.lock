@@ -3506,6 +3506,7 @@ __metadata:
     "@types/three": "npm:0.182.0"
     axios: "npm:1.13.2"
     eslint: "npm:8.19.0"
+    fast-text-encoding: "npm:1.0.6"
     graphql: "npm:16.12.0"
     jest: "npm:29.6.3"
     prettier: "npm:2.8.8"
@@ -3515,7 +3516,7 @@ __metadata:
     react-native-safe-area-context: "npm:5.6.2"
     react-native-screens: "npm:4.20.0"
     react-native-sse: "npm:1.2.1"
-    react-native-wgpu: "npm:0.5.2"
+    react-native-wgpu: "npm:0.5.11"
     react-native-worklets: "npm:0.8.0-bundle-mode-preview-2"
     react-test-renderer: "npm:19.2.0"
     remend: "npm:1.2.2"
@@ -5494,6 +5495,13 @@ __metadata:
   version: 2.0.6
   resolution: "fast-levenshtein@npm:2.0.6"
   checksum: 10c0/111972b37338bcb88f7d9e2c5907862c280ebf4234433b95bc611e518d192ccb2d38119c4ac86e26b668d75f7f3894f4ff5c4982899afced7ca78633b08287c4
+  languageName: node
+  linkType: hard
+
+"fast-text-encoding@npm:1.0.6":
+  version: 1.0.6
+  resolution: "fast-text-encoding@npm:1.0.6"
+  checksum: 10c0/e1d0381bda229c92c7906f63308f3b9caca8c78b732768b1ee16f560089ed21bc159bbe1434138ccd3815931ec8d4785bdade1ad1c45accfdf27ac6606ac67d2
   languageName: node
   linkType: hard
 
@@ -8777,9 +8785,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-wgpu@npm:0.5.2":
-  version: 0.5.2
-  resolution: "react-native-wgpu@npm:0.5.2"
+"react-native-wgpu@npm:0.5.11":
+  version: 0.5.11
+  resolution: "react-native-wgpu@npm:0.5.11"
   peerDependencies:
     react: "*"
     react-native: "*"
@@ -8790,7 +8798,7 @@ __metadata:
       optional: true
     react-native-worklets:
       optional: true
-  checksum: 10c0/4e9339ad15b4354f593a1895f283c08d314d2131aea46d505c22ec0ebaecf0961ec1803d9e239ee0bf5ba1aaf80943551e5cf9dac0feae4251bab8e0c295a150
+  checksum: 10c0/55fe5bd2a0a809fbc1e14ef1a612ceb7ccd1a41765b06b581abadd4be01d83e3fc8105d8694f4e0195a539f678eef4294eaea443683755d84cb80b0bfad05682
   languageName: node
   linkType: hard
 

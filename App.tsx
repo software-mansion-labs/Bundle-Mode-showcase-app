@@ -7,6 +7,10 @@ import GraphQLExample from './app/GraphQLExample';
 import StreamingMarkdownSimulator from './app/StreamingMarkdownSimulator';
 import LLMStreamingDemo from './app/LLMStreamingDemo';
 
+// The two lines below are needed by three.js
+import "fast-text-encoding";
+window.parent = window;
+
 const Stack = createNativeStackNavigator();
 
 export default function App() {
