@@ -118,6 +118,7 @@ declare global {
   var self: typeof globalThis;
   var navigator: NavigatorGPU;
   var renderer: WebGPURenderer | null;
+  var stopRender: boolean;
   var lastFrame: number;
   var _WORKLET: boolean | undefined;
 }

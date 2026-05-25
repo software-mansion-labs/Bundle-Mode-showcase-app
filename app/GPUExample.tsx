@@ -4,18 +4,13 @@ import {
   type CanvasRef,
 } from 'react-native-wgpu';
 import {
-  ACESFilmicToneMapping,
   BufferAttribute,
   BufferGeometry,
   Clock,
   Color,
-  DataTexture,
-  EquirectangularReflectionMapping,
-  HalfFloatType,
   Mesh,
-  MeshStandardMaterial,
+  MeshBasicMaterial,
   PerspectiveCamera,
-  RGBAFormat,
   Scene,
   Vector3,
   type Material,
@@ -24,40 +19,29 @@ import { StyleSheet, View, Pressable, Text } from 'react-native';
 import { makeWebGPURenderer, useBusyJS } from '../utils';
 import { scheduleOnUI } from 'react-native-worklets';
 import { useEffect, useState } from 'react';
-import { useGLTF, useRGBE, type GLTF } from './AssetManager';
+import { useGLTF, type GLTF } from './AssetManager';
 
 type SerializedMesh = {
   positions: Float32Array;
   normals: Float32Array | null;
-  uvs: Float32Array | null;
   indices: Uint16Array | Uint32Array | null;
   matrix: Float32Array;
   color: [number, number, number];
-  metalness: number;
-  roughness: number;
-};
-
-type SerializedEnv = {
-  data: Uint16Array;
-  width: number;
-  height: number;
 };
 
 export default function GPUExample() {
   const ref = useCanvasRef();
   const toggleBusyJS = useBusyJS();
   const gltf = useGLTF(require('./assets/helmet/DamagedHelmet.gltf'));
-  const env = useRGBE(require('./assets/helmet/royal_esplanade_1k.hdr'));
 
   useEffect(() => {
-    if (!gltf || !env) {
+    if (!gltf) {
       return;
     }
     const meshes = serializeScene(gltf);
-    const envData = serializeEnv(env);
-    renderOnUI(ref, meshes, envData);
+    renderOnUI(ref, meshes);
     return cleanupOnUI();
-  }, [gltf, env, ref]);
+  }, [gltf, ref]);
 
   return (
     <View style={styles.container}>
@@ -81,20 +65,14 @@ function serializeScene(gltf: GLTF): SerializedMesh[] {
       return;
     }
     const geo = mesh.geometry as BufferGeometry;
-    const mat = mesh.material as Material & {
-      color?: Color;
-      metalness?: number;
-      roughness?: number;
-    };
+    const mat = mesh.material as Material & { color?: Color };
     const position = geo.attributes.position as BufferAttribute;
     const normal = geo.attributes.normal as BufferAttribute | undefined;
-    const uv = geo.attributes.uv as BufferAttribute | undefined;
     const index = geo.index;
     const color = mat.color ?? new Color(0xcccccc);
     meshes.push({
       positions: new Float32Array(position.array),
       normals: normal ? new Float32Array(normal.array) : null,
-      uvs: uv ? new Float32Array(uv.array) : null,
       indices: index
         ? index.array.BYTES_PER_ELEMENT === 4
           ? new Uint32Array(index.array as Uint32Array)
@@ -102,42 +80,33 @@ function serializeScene(gltf: GLTF): SerializedMesh[] {
         : null,
       matrix: new Float32Array(mesh.matrixWorld.elements),
       color: [color.r, color.g, color.b],
-      metalness: mat.metalness ?? 0.8,
-      roughness: mat.roughness ?? 0.4,
     });
   });
   return meshes;
 }
 
-function serializeEnv(texture: { image: any }): SerializedEnv {
-  const image = texture.image;
-  return {
-    data: new Uint16Array(image.data.buffer ?? image.data),
-    width: image.width,
-    height: image.height,
-  };
-}
-
-function renderOnUI(
+async function renderOnUI(
   ref: React.RefObject<CanvasRef>,
   meshes: SerializedMesh[],
-  env: SerializedEnv,
 ) {
   const context = ref.current!.getContext('webgpu')!;
 
-  const navigator = globalThis.navigator as NavigatorGPU;
+  const adapter = await navigator.gpu.requestAdapter();
+  const device = await adapter?.requestDevice();
+
+  const nav = globalThis.navigator as NavigatorGPU;
   const GPUBufferUsage = globalThis.GPUBufferUsage;
   const GPUColorWrite = globalThis.GPUColorWrite;
   const GPUMapMode = globalThis.GPUMapMode;
   const GPUShaderStage = globalThis.GPUShaderStage;
   const GPUTextureUsage = globalThis.GPUTextureUsage;
 
-  scheduleOnUI(async () => {
+  scheduleOnUI(() => {
     'worklet';
 
     if (!globalThis.self) {
       globalThis.self = globalThis;
-      globalThis.navigator = { gpu: navigator.gpu } as NavigatorGPU;
+      globalThis.navigator = { gpu: nav.gpu } as NavigatorGPU;
       globalThis.GPUBufferUsage = GPUBufferUsage;
       globalThis.GPUColorWrite = GPUColorWrite;
       globalThis.GPUMapMode = GPUMapMode;
@@ -161,19 +130,6 @@ function renderOnUI(
 
     const scene = new Scene();
 
-    const envTexture = new DataTexture(
-      env.data,
-      env.width,
-      env.height,
-      RGBAFormat,
-      HalfFloatType,
-    );
-    envTexture.mapping = EquirectangularReflectionMapping;
-    envTexture.needsUpdate = true;
-
-    scene.background = envTexture;
-    scene.environment = envTexture;
-
     for (const m of meshes) {
       const geometry = new BufferGeometry();
       geometry.setAttribute(
@@ -186,19 +142,14 @@ function renderOnUI(
           new BufferAttribute(m.normals, 3),
         );
       }
-      if (m.uvs) {
-        geometry.setAttribute('uv', new BufferAttribute(m.uvs, 2));
-      }
       if (m.indices) {
         geometry.setIndex(new BufferAttribute(m.indices, 1));
       }
       if (!m.normals) {
         geometry.computeVertexNormals();
       }
-      const material = new MeshStandardMaterial({
+      const material = new MeshBasicMaterial({
         color: new Color(m.color[0], m.color[1], m.color[2]),
-        metalness: m.metalness,
-        roughness: m.roughness,
       });
       const mesh = new Mesh(geometry, material);
       mesh.matrixAutoUpdate = false;
@@ -206,13 +157,16 @@ function renderOnUI(
       scene.add(mesh);
     }
 
-    const renderer = makeWebGPURenderer(context);
-    renderer.toneMapping = ACESFilmicToneMapping;
-    await renderer.init();
+    const renderer = makeWebGPURenderer(context, device);
 
     const clock = new Clock();
+    globalThis.renderer = renderer;
+    globalThis.stopRender = false;
 
     function animate() {
+      if (globalThis.stopRender) {
+        return;
+      }
       const elapsed = clock.getElapsedTime();
       const distance = 3;
       camera.position.x = Math.sin(elapsed) * distance;
@@ -221,21 +175,26 @@ function renderOnUI(
 
       renderer.render(scene, camera);
       context!.present();
+      requestAnimationFrame(animate);
     }
 
-    globalThis.renderer = renderer;
-    await renderer.setAnimationLoop(animate);
+    renderer
+      .init()
+      .then(() => {
+        requestAnimationFrame(animate);
+      })
+      .catch((e: unknown) => {
+        console.error('renderer.init failed', e);
+      });
   });
 }
 
 function cleanupOnUI() {
   return () => {
-    scheduleOnUI(async () => {
+    scheduleOnUI(() => {
       'worklet';
-      if (globalThis.renderer) {
-        await globalThis.renderer.setAnimationLoop(null);
-        globalThis.renderer = null;
-      }
+      globalThis.stopRender = true;
+      globalThis.renderer = null;
     });
   };
 }
