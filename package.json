@@ -12,7 +12,7 @@
     "react-native-safe-area-context": "5.6.2",
     "react-native-screens": "4.20.0",
     "react-native-sse": "1.2.1",
-    "react-native-wgpu": "0.5.11",
+    "react-native-webgpu": "file:/Users/wcandillon/tmp/tmp/react-native-webgpu/packages/webgpu/package.tgz",
     "react-native-worklets": "0.8.0-bundle-mode-preview-2",
     "remend": "1.2.2",
     "rxjs": "7.8.2",
@@ -37,6 +37,7 @@
     "jest": "29.6.3",
     "prettier": "2.8.8",
     "react-test-renderer": "19.2.0",
+    "sharp": "0.34.5",
     "typescript": "5.8.3"
   },
   "engines": {
