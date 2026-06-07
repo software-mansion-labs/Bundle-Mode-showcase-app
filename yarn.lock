@@ -3752,7 +3752,7 @@ __metadata:
     react-native-safe-area-context: "npm:5.6.2"
     react-native-screens: "npm:4.20.0"
     react-native-sse: "npm:1.2.1"
-    react-native-webgpu: "file:/Users/wcandillon/tmp/tmp/react-native-webgpu/packages/webgpu/package.tgz"
+    react-native-webgpu: "npm:0.5.15"
     react-native-worklets: "npm:0.8.0-bundle-mode-preview-2"
     react-test-renderer: "npm:19.2.0"
     remend: "npm:1.2.2"
@@ -9029,9 +9029,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-webgpu@file:/Users/wcandillon/tmp/tmp/react-native-webgpu/packages/webgpu/package.tgz::locator=BundleModeApp%40workspace%3A.":
-  version: 0.5.14
-  resolution: "react-native-webgpu@file:/Users/wcandillon/tmp/tmp/react-native-webgpu/packages/webgpu/package.tgz#/Users/wcandillon/tmp/tmp/react-native-webgpu/packages/webgpu/package.tgz::hash=4b078a&locator=BundleModeApp%40workspace%3A."
+"react-native-webgpu@npm:0.5.15":
+  version: 0.5.15
+  resolution: "react-native-webgpu@npm:0.5.15"
   peerDependencies:
     react: "*"
     react-native: ">=0.81.0"
@@ -9042,7 +9042,7 @@ __metadata:
       optional: true
     react-native-worklets:
       optional: true
-  checksum: 10c0/cfb08e5b237f2811378d164c923115a3d6c39b2a41a227620802db3182bca00e3368ecca4c7c5340ab25b3dd1d66ce4f3c7b9f84d3539c48ce3c1d9d62123ad2
+  checksum: 10c0/91430eb36a5ff5f7e43519a79b384bc9648776c2b4788900e8f9154a706cc8c60c101decc3ef32631cef300f2f636e9aeb038ccf90b15dd8cbb7f8381f39fa4b
   languageName: node
   linkType: hard
 

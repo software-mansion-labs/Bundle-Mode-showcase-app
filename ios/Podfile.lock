@@ -1466,7 +1466,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - react-native-webgpu (0.5.14):
+  - react-native-webgpu (0.5.15):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2300,7 +2300,7 @@ SPEC CHECKSUMS:
   React-Mapbuffer: a6fc74cc27085555ac5839b2f792c19dc918d8bb
   React-microtasksnativemodule: 0f26742ab54a7d6cd59efb2299956dc9e60ab335
   react-native-safe-area-context: 37e680fc4cace3c0030ee46e8987d24f5d3bdab2
-  react-native-webgpu: b61e847d718377e594dacf4e1d9385481e20aaa1
+  react-native-webgpu: fed2670dcb91ac71870455eb21ddbb8db69c8a35
   React-NativeModulesApple: e86264955e9a6402abb8e355f5888cb973ee78e3
   React-networking: 801db50c86db0c85557564a0422d41be84c3ea9f
   React-oscompat: 759780c1327bb5e50f8e18f41ce40d5ed920abb3

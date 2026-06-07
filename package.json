@@ -12,7 +12,7 @@
     "react-native-safe-area-context": "5.6.2",
     "react-native-screens": "4.20.0",
     "react-native-sse": "1.2.1",
-    "react-native-webgpu": "file:/Users/wcandillon/tmp/tmp/react-native-webgpu/packages/webgpu/package.tgz",
+    "react-native-webgpu": "0.5.15",
     "react-native-worklets": "0.8.0-bundle-mode-preview-2",
     "remend": "1.2.2",
     "rxjs": "7.8.2",
