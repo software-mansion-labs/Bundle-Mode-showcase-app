@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
-  runOnUI,
   scheduleOnRuntime,
+  scheduleOnUI,
   type WorkletRuntime,
 } from 'react-native-worklets';
 import { WebGPURenderer } from 'three/webgpu';
@@ -114,9 +114,50 @@ export function useBusyJS() {
   };
 }
 
+export function useBusyUI() {
+  const [working, setWorking] = useState(false);
+  useEffect(() => {
+    if (!working) {
+      return;
+    }
+    scheduleOnUI(() => {
+      'worklet';
+      if (globalThis.busyJob !== null) {
+        cancelAnimationFrame(globalThis.busyJob);
+      } else {
+        globalThis.busyJob = requestAnimationFrame(work);
+
+        function work() {
+          const sleepTime = 250;
+          const now = performance.now();
+          while (performance.now() - now < sleepTime) {
+            // Busy-wait for a short time to simulate work
+          }
+          globalThis.busyJob = requestAnimationFrame(work);
+        }
+      }
+    });
+
+    return () => {
+      scheduleOnUI(() => {
+        'worklet';
+        if (globalThis.busyJob !== null) {
+          cancelAnimationFrame(globalThis.busyJob);
+          globalThis.busyJob = null;
+        }
+      });
+    };
+  }, [working]);
+
+  return function toggleWorking() {
+    setWorking(prev => !prev);
+  };
+}
+
 declare global {
   var self: typeof globalThis;
   var navigator: NavigatorGPU;
+  var busyJob: number | null;
   var renderer: WebGPURenderer | null;
   var stopRender: boolean;
   var lastFrame: number;

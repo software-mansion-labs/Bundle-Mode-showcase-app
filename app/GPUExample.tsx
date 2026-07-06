@@ -1,8 +1,4 @@
-import {
-  Canvas,
-  useCanvasRef,
-  type CanvasRef,
-} from 'react-native-webgpu';
+import { Canvas, useCanvasRef, type CanvasRef } from 'react-native-webgpu';
 import {
   AnimationClip,
   AnimationMixer,
@@ -46,14 +42,21 @@ import {
   viewportSharedTexture,
   viewportUV,
 } from 'three/tsl';
-import { StyleSheet, View, Pressable, Text } from 'react-native';
-import { makeWebGPURenderer, useBusyJS } from '../utils';
+import {
+  Animated,
+  Easing,
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+} from 'react-native';
+import { makeWebGPURenderer, useBusyJS, useBusyUI } from '../utils';
 import {
   createWorkletRuntime,
   scheduleOnRuntime,
   scheduleOnUI,
 } from 'react-native-worklets';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useGLTF, useRawBytes, type GLTF } from './AssetManager';
 
 const DIFFUSE_SIZE = 512;
@@ -123,6 +126,7 @@ export function GPUExampleUI() {
 function Backdrop({ thread, label }: { thread: Thread; label: string }) {
   const ref = useCanvasRef();
   const toggleBusyJS = useBusyJS();
+  const toggleBusyUI = useBusyUI();
   const gltf = useGLTF(require('./assets/michelle/model.gltf'));
   const diffuse = useRawBytes(
     require('./assets/michelle/Ch03_1001_Diffuse.512.rgba8.bin'),
@@ -147,11 +151,17 @@ function Backdrop({ thread, label }: { thread: Thread; label: string }) {
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <StateAnimatedBox />
+          <NativeAnimatedBox />
           <Text style={styles.threadLabel}>{label}</Text>
         </View>
-        <Pressable style={styles.button} onPress={toggleBusyJS}>
-          <Text style={styles.buttonText}>Toggle busy JS</Text>
-        </Pressable>
+        <View style={styles.buttonColumn}>
+          <TouchableOpacity style={styles.button} onPress={toggleBusyJS}>
+            <Text style={styles.buttonText}>Toggle busy JS</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={toggleBusyUI}>
+            <Text style={styles.buttonText}>Toggle busy UI</Text>
+          </TouchableOpacity>
+        </View>
       </View>
       <Canvas ref={ref} style={styles.gpu} />
     </View>
@@ -520,6 +530,41 @@ function StateAnimatedBox() {
   );
 }
 
+// Counterpart to StateAnimatedBox: the rotation is driven by the Animated native
+// driver, so the whole animation is precomputed and stepped by the platform's
+// frame callback on the UI thread. A busy JS thread leaves it untouched, but a
+// busy UI thread stalls the frame callback and the box janks.
+function NativeAnimatedBox() {
+  const rotate = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const animation = Animated.loop(
+      Animated.timing(rotate, {
+        toValue: 1,
+        duration: 1500,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      }),
+    );
+    animation.start();
+
+    return () => {
+      animation.stop();
+    };
+  }, [rotate]);
+
+  const spin = rotate.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '360deg'],
+  });
+
+  return (
+    <Animated.View
+      style={[styles.box, styles.nativeBox, { transform: [{ rotate: spin }] }]}
+    />
+  );
+}
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -536,11 +581,15 @@ const styles = StyleSheet.create({
   headerLeft: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 10,
   },
   threadLabel: {
-    marginLeft: 10,
     fontWeight: '600',
     color: '#333',
+  },
+  buttonColumn: {
+    flexDirection: 'column',
+    gap: 8,
   },
   button: {
     backgroundColor: '#007AFF',
@@ -559,5 +608,8 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     backgroundColor: 'blue',
+  },
+  nativeBox: {
+    backgroundColor: 'green',
   },
 });
