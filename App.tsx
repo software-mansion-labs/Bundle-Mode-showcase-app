@@ -2,10 +2,14 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import HomeScreen from './app/HomeScreen';
-import GPUExample from './app/GPUExample';
+import GPUExample, { GPUExampleUI } from './app/GPUExample';
 import GraphQLExample from './app/GraphQLExample';
 import StreamingMarkdownSimulator from './app/StreamingMarkdownSimulator';
 import LLMStreamingDemo from './app/LLMStreamingDemo';
+
+// The two lines below are needed by three.js
+import "fast-text-encoding";
+window.parent = window;
 
 const Stack = createNativeStackNavigator();
 
@@ -32,7 +36,12 @@ export default function App() {
         <Stack.Screen
           name="GPU"
           component={GPUExample}
-          options={{ title: 'GPU Animation' }}
+          options={{ title: 'GPU (Dedicated thread)' }}
+        />
+        <Stack.Screen
+          name="GPUUI"
+          component={GPUExampleUI}
+          options={{ title: 'GPU (UI thread)' }}
         />
         <Stack.Screen
           name="GraphQL"
