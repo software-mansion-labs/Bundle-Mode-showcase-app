@@ -2,11 +2,16 @@
 const workletsPluginOptions = {
   bundleMode: true,
   strictGlobal: true,
-  workletizableModules: ['axios', 'three', 'three/tsl', '@apollo/client', 'remend'],
+  importForwarding: {
+    moduleNames: ['axios', 'three', 'three/tsl', '@apollo/client', 'remend'],
+  },
 };
 
 /** @type {import('@babel/core').TransformOptions} */
 module.exports = {
   presets: ['module:@react-native/babel-preset'],
-  plugins: [['react-native-worklets/plugin', workletsPluginOptions]],
+  plugins: [
+    '@babel/plugin-transform-class-static-block',
+    ['react-native-worklets/plugin', workletsPluginOptions],
+  ],
 };

@@ -35,7 +35,11 @@ const config = {
           type: 'sourceFile',
         };
       }
-      return context.resolveRequest(context, moduleName, platform);
+      return bundleModeMetroConfig.resolver.resolveRequest(
+        context,
+        moduleName,
+        platform,
+      );
     },
     assetExts: [
       ...defaultConfig.resolver.assetExts,

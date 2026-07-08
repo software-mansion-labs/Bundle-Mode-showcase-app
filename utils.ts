@@ -162,4 +162,5 @@ declare global {
   var stopRender: boolean;
   var lastFrame: number;
   var _WORKLET: boolean | undefined;
+  var performance: { now(): number };
 }

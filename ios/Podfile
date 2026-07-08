@@ -8,7 +8,7 @@ require Pod::Executable.execute_command('node', ['-p',
 platform :ios, min_ios_version_supported
 prepare_react_native_project!
 
-ENV['RCT_USE_PREBUILT_RNCORE']='1'
+ENV['RCT_USE_PREBUILT_RNCORE']='0'
 ENV['RCT_USE_RN_DEP']='1'
 
 linkage = ENV['USE_FRAMEWORKS']
@@ -33,5 +33,30 @@ target 'BundleModeApp' do
       :mac_catalyst_enabled => false,
       # :ccache_enabled => true
     )
+
+    extra_links = {
+      'react-native-webgpu' => {
+        :frameworks => ['AVFoundation', 'CoreMedia', 'CoreVideo', 'RCTBlob'],
+        :search_paths => ['"$(PODS_CONFIGURATION_BUILD_DIR)/React-RCTBlob"'],
+      },
+      'RNWorklets' => {
+        :frameworks => ['RCTNetwork'],
+        :search_paths => ['"$(PODS_CONFIGURATION_BUILD_DIR)/React-RCTNetwork"'],
+      },
+    }
+    installer.pods_project.targets.each do |target|
+      spec = extra_links[target.name]
+      next unless spec
+      target.build_configurations.each do |config|
+        ldflags = config.build_settings['OTHER_LDFLAGS'] || ['$(inherited)']
+        ldflags = [ldflags] if ldflags.is_a?(String)
+        ldflags += spec[:frameworks].flat_map { |f| ['-framework', f] }
+        config.build_settings['OTHER_LDFLAGS'] = ldflags
+        fwpaths = config.build_settings['FRAMEWORK_SEARCH_PATHS'] || ['$(inherited)']
+        fwpaths = [fwpaths] if fwpaths.is_a?(String)
+        fwpaths += spec[:search_paths]
+        config.build_settings['FRAMEWORK_SEARCH_PATHS'] = fwpaths
+      end
+    end
   end
 end

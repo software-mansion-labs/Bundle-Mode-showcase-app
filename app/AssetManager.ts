@@ -43,13 +43,34 @@ export const useGLTF = (asset: ReturnType<typeof require>) => {
   const url = resolveAsset(asset);
   const [gltf, setGLTF] = useState<GLTF | null>(null);
   useEffect(() => {
-    const loader = new GLTFLoader();
-    loader.load(
-      url,
-      (model: GLTF) => setGLTF(model),
-      undefined,
-      (err: unknown) => console.error('GLTF load error', err),
-    );
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.onload = () => {
+      const json = JSON.parse(xhr.response as string);
+      delete json.images;
+      delete json.textures;
+      delete json.samplers;
+      for (const material of json.materials ?? []) {
+        delete material.normalTexture;
+        delete material.occlusionTexture;
+        delete material.emissiveTexture;
+        delete material.extensions;
+        const pbr = material.pbrMetallicRoughness;
+        if (pbr) {
+          delete pbr.baseColorTexture;
+          delete pbr.metallicRoughnessTexture;
+        }
+      }
+      const path = url.slice(0, url.lastIndexOf('/') + 1);
+      new GLTFLoader().parse(
+        JSON.stringify(json),
+        path,
+        (model: GLTF) => setGLTF(model),
+        (err: unknown) => console.error('GLTF parse error', err),
+      );
+    };
+    xhr.onerror = () => console.error('GLTF xhr error', url);
+    xhr.send();
   }, [url]);
   return gltf;
 };
