@@ -20,7 +20,9 @@ export default function HomeScreen({ navigation }: Props) {
         onPress={() => navigation.navigate('GPU')}
       >
         <Text style={styles.buttonText}>GPU Animation Example</Text>
-        <Text style={styles.buttonSubtext}>dedicated thread (stays smooth)</Text>
+        <Text style={styles.buttonSubtext}>
+          dedicated thread (stays smooth)
+        </Text>
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -36,6 +38,7 @@ export default function HomeScreen({ navigation }: Props) {
         onPress={() => navigation.navigate('GraphQL')}
       >
         <Text style={styles.buttonText}>GraphQL Example</Text>
+        <Text style={styles.buttonSubtext}>fully off the JS thread</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -43,7 +46,7 @@ export default function HomeScreen({ navigation }: Props) {
         onPress={() => navigation.navigate('StreamingMarkdown')}
       >
         <Text style={styles.buttonText}>Streaming Markdown</Text>
-        <Text style={styles.buttonSubtext}>remend on background worklet</Text>
+        <Text style={styles.buttonSubtext}>remend on background thread</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
