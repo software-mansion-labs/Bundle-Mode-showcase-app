@@ -4,12 +4,15 @@ This is an app that showcases the use of `react-native-worklets` Bundle Mode fea
 
 ## Overview
 
-It showcases two examples:
+Each example offloads heavy work to a dedicated Worklet Runtime (a background thread) so the UI stays responsive:
 
-- A GPU animation running on a background thread, fetching geometry from the network, using `react-native-wgpu`, `three.js`, and `axios`.
-- A GraphQL client running on a background thread, fetching data from a public GraphQL API, using `@apollo/client` and `graphql`.
+- **GPU animation — dedicated thread** ([GPUExample.tsx](app/GPUExample.tsx)): a WebGPU 3D animation using `react-native-webgpu`, `three.js`, and `axios`, rendered on its own thread so it stays smooth even when the JS thread is busy.
+- **GPU animation — UI thread** ([GPUExampleUI](app/GPUExample.tsx)): the same animation on the Reanimated UI thread — janks on busy JS, the contrast to the one above.
+- **GraphQL client** ([GraphQLExample.tsx](app/GraphQLExample.tsx)): queries the Rick and Morty API with `@apollo/client` and `graphql`, fully off the JS thread.
+- **Streaming Markdown** ([StreamingMarkdownSimulator.tsx](app/StreamingMarkdownSimulator.tsx)): repairs a simulated markdown stream with `remend`, rendered with `react-native-enriched-markdown`.
+- **LLM streaming** ([LLMStreamingDemo.tsx](app/LLMStreamingDemo.tsx)): the same, over a live OpenAI SSE stream (`react-native-sse`). Set your `OPENAI_API_KEY` in [openAIStream.ts](app/openAIStream.ts) first.
 
-Aforementioned libraries can be run on background threads, on Worklet runtimes, because they are allowlisted in the [Babel config](babel.config.js) of this project.
+The libraries imported inside worklets (`axios`, `three`, `@apollo/client`, `remend`) run on background threads because they are allowlisted via `importForwarding` in the [Babel config](babel.config.js).
 
 You can find detailed instructions on how to enable the Bundle Mode in your project [here](https://docs.swmansion.com/react-native-worklets/docs/bundleMode/setup).
 

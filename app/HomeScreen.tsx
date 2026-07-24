@@ -30,7 +30,7 @@ export default function HomeScreen({ navigation }: Props) {
         onPress={() => navigation.navigate('GPUUI')}
       >
         <Text style={styles.buttonText}>GPU Animation Example</Text>
-        <Text style={styles.buttonSubtext}>UI thread (janks on busy JS)</Text>
+        <Text style={styles.buttonSubtext}>UI thread (janks on busy UI)</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
