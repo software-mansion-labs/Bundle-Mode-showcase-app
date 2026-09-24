@@ -1,0 +1,39 @@
+diff --git a/build/three.webgpu.js b/build/three.webgpu.js
+index 8cbb77a7bd36c6a89d397f18f8758fc60ff8146e..6d457e03a5e05a8bb4b991f9b6d93d615203b8e6 100644
+--- a/build/three.webgpu.js
++++ b/build/three.webgpu.js
+@@ -89280,7 +89280,7 @@ class WebGPUBackend extends Backend {
+ 
+ 				// Handle occlusion queries
+ 
+-				if ( renderContextData.currentPass instanceof GPURenderBundleEncoder ) {
++				if ( typeof GPURenderBundleEncoder !== 'undefined' && renderContextData.currentPass instanceof GPURenderBundleEncoder ) {
+ 
+ 					if ( object.occlusionTest === true ) {
+ 
+diff --git a/build/three.webgpu.nodes.js b/build/three.webgpu.nodes.js
+index fda563ffd328b99dc693d884f51fd39beb530a47..b24bdab6d35d159e18dae4bb75bca1c96d336bea 100644
+--- a/build/three.webgpu.nodes.js
++++ b/build/three.webgpu.nodes.js
+@@ -89280,7 +89280,7 @@ class WebGPUBackend extends Backend {
+ 
+ 				// Handle occlusion queries
+ 
+-				if ( renderContextData.currentPass instanceof GPURenderBundleEncoder ) {
++				if ( typeof GPURenderBundleEncoder !== 'undefined' && renderContextData.currentPass instanceof GPURenderBundleEncoder ) {
+ 
+ 					if ( object.occlusionTest === true ) {
+ 
+diff --git a/src/renderers/webgpu/WebGPUBackend.js b/src/renderers/webgpu/WebGPUBackend.js
+index e6345e42e2008f6606971c626326d6479e50a51a..b71c8da153e792eb9d39790648625f43926a4d49 100644
+--- a/src/renderers/webgpu/WebGPUBackend.js
++++ b/src/renderers/webgpu/WebGPUBackend.js
+@@ -2323,7 +2323,7 @@ class WebGPUBackend extends Backend {
+ 
+ 				// Handle occlusion queries
+ 
+-				if ( renderContextData.currentPass instanceof GPURenderBundleEncoder ) {
++				if ( typeof GPURenderBundleEncoder !== 'undefined' && renderContextData.currentPass instanceof GPURenderBundleEncoder ) {
+ 
+ 					if ( object.occlusionTest === true ) {
+ 

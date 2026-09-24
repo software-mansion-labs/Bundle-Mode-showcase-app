@@ -113,7 +113,7 @@ function List() {
           renderItem={({ item }) => <EpisodeItem item={item} />}
           keyExtractor={item => item.id.toString()}
           ListEmptyComponent={
-            error ? null : (
+            error ? undefined : (
               <Text style={styles.empty}>
                 Tap “Load episodes” to fetch a random slice of the catalogue.
               </Text>

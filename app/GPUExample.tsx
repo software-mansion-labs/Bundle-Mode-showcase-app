@@ -495,6 +495,7 @@ function cleanupScene(schedule: (worklet: () => void) => void) {
     schedule(() => {
       'worklet';
       globalThis.stopRender = true;
+      globalThis.renderer?.dispose();
       globalThis.renderer = null;
     });
   };

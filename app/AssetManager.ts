@@ -17,7 +17,7 @@ export interface GLTF {
 }
 
 export const resolveAsset = (mod: ReturnType<typeof require>): string =>
-  Image.resolveAssetSource(mod).uri;
+  Image.resolveAssetSource(mod)!.uri;
 
 export const useRawBytes = (asset: ReturnType<typeof require>) => {
   const url = resolveAsset(asset);
